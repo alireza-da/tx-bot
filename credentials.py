@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 bot_token = os.getenv("bot_token")
-db_url = os.getenv("db_url")
+db_url = os.getenv("DATABASE_URL")
 
 
 tx_guild_id = 884460833097273455

@@ -202,6 +202,4 @@ async def remove_points(ctx: SlashContext, employee, points):
             await ctx.channel.send(embed=embedVar)
 
 
-
-
 client.run(bot_token)
