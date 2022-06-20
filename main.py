@@ -99,7 +99,7 @@ async def on_message(message: discord.Message):
 
 def find_member_by_nick(members: list[discord.Member], nick: str):
     for member in members:
-        if nick in member.nick or nick in member.display_name:
+        if (member.nick and nick in member.nick) or (member.display_name and nick in member.display_name):
             return member
 
 
