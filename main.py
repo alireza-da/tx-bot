@@ -178,7 +178,7 @@ async def add_points(ctx: SlashContext, employee, points):
             tx.points += int(points)
             update_mc(tx)
             embedVar = discord.Embed(title=f"Add Points Report",
-                                     description=f"Added {points} points to {tx.ic_name}.", color=discord.Color("#FFFF00"))
+                                     description=f"Added {str(points)} points to {tx.ic_name}.", color=discord.Color("#FFFF00"))
             await ctx.channel.send(embed=embedVar)
 
 
@@ -198,7 +198,7 @@ async def remove_points(ctx: SlashContext, employee, points):
             tx.points -= int(points)
             update_mc(tx)
             embedVar = discord.Embed(title=f"Remove Points Report",
-                                     description=f"Remove {points} points from {tx.ic_name}.", color=discord.Color("#FFFF00"))
+                                     description=f"Remove {str(points)} points from {tx.ic_name}.", color=discord.Color("#FFFF00"))
             await ctx.channel.send(embed=embedVar)
 
 
