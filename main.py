@@ -41,7 +41,7 @@ async def on_ready():
     tx_guild = client.guilds[0]
     await non_blocking_data_insertion(setup_tables, emps)
     staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
-    staff_msgs = await staff_update_channel.history(limit=4000).flatten()
+    staff_msgs = await staff_update_channel.history(limit=10000).flatten()
     txs = get_all_mechanics()
 
     for tx in txs:
@@ -138,8 +138,8 @@ async def fr_points(ctx: SlashContext, employee):
                                      description=f":abc: IC Name: {tx.ic_name}\n:1234: Points: {tx.points}\n:taxi: "
                                                  f"Finishe"
                                                  f"d Requests: {tx_data[str(tx.discord_id)]['finish_reqs']}\n:date: "
-                                                 f"Since: {tx_data[str(tx.discord_id)]['last_rank_up']}")
-            await ctx.channel.send(embed=embedVar)
+                                                 f"Since: {tx_data[str(tx.discord_id)]['last_rank_up'].split('.')[0]}")
+            await ctx.send(embed=embedVar)
 
 
 @slash.slash(name="ClearFRPoints",
@@ -168,6 +168,7 @@ async def clear_points(ctx: SlashContext, employee):
              )
 async def add_points(ctx: SlashContext, employee, points):
     if ctx:
+        await ctx.send(":hourglass: In Progress ...")
         _id = None
         if "!" in employee:
             _id = int(employee.split("!")[1].replace(">", ""))
@@ -183,11 +184,12 @@ async def add_points(ctx: SlashContext, employee, points):
 
 
 @slash.slash(name="RemoveFRPoints",
-             description="Add points to an employee",
+             description="Remove points from an employee",
              guild_ids=[tx_guild_id],
              )
 async def remove_points(ctx: SlashContext, employee, points):
     if ctx:
+        await ctx.send(":hourglass: In Progress ...")
         _id = None
         if "!" in employee:
             _id = int(employee.split("!")[1].replace(">", ""))
@@ -200,6 +202,47 @@ async def remove_points(ctx: SlashContext, employee, points):
             embedVar = discord.Embed(title=f"Remove Points Report",
                                      description=f"Remove {str(points)} points from {tx.ic_name}.", color=discord.Color("#FFFF00"))
             await ctx.channel.send(embed=embedVar)
+
+
+@slash.slash(name="FRA",
+             description="Job Abuse Detector",
+             guild_ids=[tx_guild_id],
+             )
+async def fra(ctx: SlashContext, user):
+    if ctx:
+        req_list_channel = ctx.guild.get_channel(request_list_id)
+        await ctx.send(":hourglass: In Progress ...")
+        hist = await req_list_channel.history(limit=10000).flatten()
+        res = {}
+        reqs_pair = []
+        fid = 0
+        fname = ""
+        nid = 0
+        for msg in hist:
+            if "[Finish request]" in msg.content:
+                lines = msg.content.split("\n")
+                fid = lines[-1].split(" ")[-1]
+                fname_list = lines[1].split(" ")
+                fname = f"{fname_list[4]} {fname_list[5]}"
+                reqs_pair[fid] = None
+            elif "[New request]" in msg.content:
+                lines = msg.content.split("\n")
+                nid = lines[-1].split(" ")[-1]
+                if nid in reqs_pair:
+                    name = lines[-1].split(" ")[-1]
+                    if name == user:
+                        try:
+                            res[fname] += 1
+                        except KeyError as e:
+                            res[fname] = 1
+                    reqs_pair.remove(nid)
+        embedVar = discord.Embed(title="FRA Report", color=discord.Color("#FFFF00"))
+        for key in res.keys():
+            if res[key] < 3:
+                del res[key]
+            else:
+                embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}")
+        await ctx.channel.send(embed=embedVar)
 
 
 client.run(bot_token)
