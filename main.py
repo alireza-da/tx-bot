@@ -253,7 +253,7 @@ async def fra(ctx: SlashContext, user):
              description="Set Job",
              guild_ids=[tx_guild_id],
              )
-async def set_job(ctx: SlashContext, employee, rank, roster, license):
+async def set_job(ctx: SlashContext, employee, rank, roster, ic_name, license):
     if ctx:
         _id = None
         if "!" in employee:
@@ -265,11 +265,12 @@ async def set_job(ctx: SlashContext, employee, rank, roster, license):
             roles = get_ranks_roles_by_id(ctx.guild)
             await member.add_roles(roles[884815982110060635])
             await member.add_roles(roles[884815998249758830])
+            await member.edit(nick=f"[{roster}] {ic_name}")
             embedVar = discord.Embed(title=f"Set Job Report", description=f"Successfully Signed {member.mention}")
             await ctx.send(embed=embedVar)
             staff_channel = ctx.guild.get_channel(staff_update_channel_id)
             await staff_channel.send(f"**Additional Staff update [{jdatetime.datetime.now().strftime(dt_format)}]** 📌\n" 
-                                    f"[{roster}] {member.mention} Has Been joined To SSTX and Will Be Known as [{roster}], Welcome!\n"
+                                    f"{member.mention} Has Been joined To SSTX and Will Be Known as [{roster}], Welcome!\n"
                                      f"Author: {ctx.author.mention}")
             if license.lower() == "no":
                 await member.add_roles(roles[920018697924522074])
