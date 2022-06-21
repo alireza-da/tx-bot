@@ -7,7 +7,6 @@ import datetime
 import dateutil.parser
 import jdatetime
 
-
 from discord.ext import commands
 from credentials import bot_token, tx_guild_id, staff_update_channel_id, request_list_id
 from discord.ext import commands
@@ -15,7 +14,6 @@ from discord.utils import get
 from discord_slash import SlashCommand, SlashContext
 from setup_db import setup_tables, get_all_mechanics, get_user, update_mc
 from model import TxEmployee
-
 
 intents = discord.Intents.all()
 intents.members = True
@@ -87,11 +85,13 @@ async def on_message(message: discord.Message):
             tx = get_user(tx.id)
             tx.points += 1
             update_mc(tx)
-            tx_data[str(tx.discord_id)]["finish_reqs"] = tx_data[str(tx.discord_id)]["finish_reqs"]+1
+            tx_data[str(tx.discord_id)]["finish_reqs"] = tx_data[str(tx.discord_id)]["finish_reqs"] + 1
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
         elif message.channel.id == staff_update_channel_id and ":Rankup:" in message.content or ":DemoteRank:" in message.content or "Welcome! <:green:942504144013492314>" in message.content:
             tx = get_user(message.mentions[0].id)
+            tx.points = 0
+            update_mc(tx)
             tx_data[str(tx.discord_id)]["last_rank_up"] = str(message.created_at)
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
@@ -134,8 +134,9 @@ async def fr_points(ctx: SlashContext, employee):
             _id = int(employee.split("@")[1].replace(">", ""))
         if _id:
             tx = get_user(_id)
+            roster = get_ic_name_roster(ctx.guild.get_member(_id))[1]
             embedVar = discord.Embed(title=f"{tx.ic_name}'s Finished Requests Report",
-                                     description=f":abc: IC Name: {tx.ic_name}\n:1234: Points: {tx.points}\n:taxi: "
+                                     description=f":abc: IC Name: {tx.ic_name} Roster: {roster}\n:1234: Points: {tx.points}\n:taxi: "
                                                  f"Finishe"
                                                  f"d Requests: {tx_data[str(tx.discord_id)]['finish_reqs']}\n:date: "
                                                  f"Since: {tx_data[str(tx.discord_id)]['last_rank_up'].split('.')[0]}")
@@ -155,10 +156,11 @@ async def clear_points(ctx: SlashContext, employee):
             _id = int(employee.split("@")[1].replace(">", ""))
         if _id:
             tx = get_user(_id)
+            prev_txp = tx.points
             tx.points = 0
             update_mc(tx)
             embedVar = discord.Embed(title=f"Clear Points Report",
-                                     description=f"Cleared {tx.ic_name} points.", color=discord.Color("#FFFF00"))
+                                     description=f"Cleared {tx.ic_name} points. Previous Points: {prev_txp}")
             await ctx.channel.send(embed=embedVar)
 
 
@@ -176,10 +178,11 @@ async def add_points(ctx: SlashContext, employee, points):
             _id = int(employee.split("@")[1].replace(">", ""))
         if _id:
             tx = get_user(_id)
+            prev_txp = tx.points
             tx.points += int(points)
             update_mc(tx)
             embedVar = discord.Embed(title=f"Add Points Report",
-                                     description=f"Added {str(points)} points to {tx.ic_name}.", color=discord.Color("#FFFF00"))
+                                     description=f"Added {str(points)} points to {tx.ic_name}. Current Points: {tx.points}. Previous Points: {prev_txp}")
             await ctx.channel.send(embed=embedVar)
 
 
@@ -197,10 +200,11 @@ async def remove_points(ctx: SlashContext, employee, points):
             _id = int(employee.split("@")[1].replace(">", ""))
         if _id:
             tx = get_user(_id)
+            prev_txp = tx.points
             tx.points -= int(points)
             update_mc(tx)
             embedVar = discord.Embed(title=f"Remove Points Report",
-                                     description=f"Remove {str(points)} points from {tx.ic_name}.", color=discord.Color("#FFFF00"))
+                                     description=f"Remove {str(points)} points from {tx.ic_name}. Previous Points: {prev_txp}. Current Points: {tx.points}")
             await ctx.channel.send(embed=embedVar)
 
 
@@ -243,6 +247,37 @@ async def fra(ctx: SlashContext, user):
             else:
                 embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}")
         await ctx.channel.send(embed=embedVar)
+
+
+@slash.slash(name="set-job",
+             description="Set Job",
+             guild_ids=[tx_guild_id],
+             )
+async def set_job(ctx: SlashContext, employee, rank, roster):
+    if ctx:
+        _id = None
+        if "!" in employee:
+            _id = int(employee.split("!")[1].replace(">", ""))
+        else:
+            _id = int(employee.split("@")[1].replace(">", ""))
+        if _id and int(rank) < 5:
+            member = get(ctx.guild.members, id=_id)
+            roles = get_ranks_roles_by_id(ctx.guild)
+            await member.add_roles(roles[884815982110060635])
+            await member.add_roles(roles[884815998249758830])
+            embedVar = discord.Embed(title=f"Set Job Report", description=f"Successfully Signed {member.mention}")
+            await ctx.send(embed=embedVar)
+            staff_channel = ctx.guild.get_channel(staff_update_channel_id)
+            await staff_channel.send(f"**Additional Staff update [{jdatetime.datetime.now().strftime(dt_format)}]** 📌\n" 
+                                    f"[{roster}] {member.mention} Has Been joined To SSTX and Will Be Known as [{roster}], Welcome!\n"
+                                     f"Author: {ctx.author.mention}")
+
+
+def get_ranks_roles_by_id(guild: discord.Guild):
+    res = {}
+    for role in guild.roles:
+        res[role.id] = role
+    return res
 
 
 client.run(bot_token)
