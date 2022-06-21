@@ -253,7 +253,7 @@ async def fra(ctx: SlashContext, user):
              description="Set Job",
              guild_ids=[tx_guild_id],
              )
-async def set_job(ctx: SlashContext, employee, rank, roster, ic_name, license):
+async def set_job(ctx: SlashContext, employee, rank, taxi_code, ic_name, license):
     if ctx:
         _id = None
         if "!" in employee:
