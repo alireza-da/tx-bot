@@ -226,7 +226,7 @@ async def fra(ctx: SlashContext, user):
             if "[Finish request]" in msg.content:
                 lines = msg.content.split("\n")
                 fid = lines[-1].split(" ")[-1]
-                fname_list = lines[1].split(" ")
+                fname_list = lines[2].split(" ")
                 print(fname_list)
                 fname = f"{fname_list[4]} {fname_list[5]}"
                 reqs_pair[fid] = None
