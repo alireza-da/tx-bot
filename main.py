@@ -35,8 +35,8 @@ async def non_blocking_data_insertion(blocking_func: typing.Callable, *args, **k
 @client.event
 async def on_ready():
     print(f"Ready to work. Client ID: {client.user.id}")
-    emps = find_tx(client.guilds[0])
     tx_guild = client.guilds[0]
+    emps = find_tx(tx_guild)
     await non_blocking_data_insertion(setup_tables, emps)
     staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
     staff_msgs = await staff_update_channel.history(limit=10000).flatten()
@@ -253,7 +253,7 @@ async def fra(ctx: SlashContext, user):
              description="Set Job",
              guild_ids=[tx_guild_id],
              )
-async def set_job(ctx: SlashContext, employee, rank, roster):
+async def set_job(ctx: SlashContext, employee, rank, roster, license):
     if ctx:
         _id = None
         if "!" in employee:
@@ -271,6 +271,8 @@ async def set_job(ctx: SlashContext, employee, rank, roster):
             await staff_channel.send(f"**Additional Staff update [{jdatetime.datetime.now().strftime(dt_format)}]** 📌\n" 
                                     f"[{roster}] {member.mention} Has Been joined To SSTX and Will Be Known as [{roster}], Welcome!\n"
                                      f"Author: {ctx.author.mention}")
+            if license.lower() == "no":
+                await member.add_roles(roles[920018697924522074])
 
 
 def get_ranks_roles_by_id(guild: discord.Guild):
