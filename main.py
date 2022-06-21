@@ -12,7 +12,7 @@ from credentials import bot_token, tx_guild_id, staff_update_channel_id, request
 from discord.ext import commands
 from discord.utils import get
 from discord_slash import SlashCommand, SlashContext
-from setup_db import setup_tables, get_all_mechanics, get_user, update_mc
+from setup_db import setup_tables, get_all_mechanics, get_user, update_mc, add_mcs_to_db
 from model import TxEmployee
 
 intents = discord.Intents.all()
@@ -274,7 +274,9 @@ async def set_job(ctx: SlashContext, employee, rank, roster, ic_name, license):
                                      f"Author: {ctx.author.mention}")
             if license.lower() == "no":
                 await member.add_roles(roles[920018697924522074])
-
+            tx = TxEmployee(ic_name, roster, member.id, "")
+            add_mcs_to_db([tx])
+            
 
 def get_ranks_roles_by_id(guild: discord.Guild):
     res = {}
