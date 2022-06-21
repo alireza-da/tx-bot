@@ -227,6 +227,7 @@ async def fra(ctx: SlashContext, user):
                 lines = msg.content.split("\n")
                 fid = lines[-1].split(" ")[-1]
                 fname_list = lines[1].split(" ")
+                print(fname_list)
                 fname = f"{fname_list[4]} {fname_list[5]}"
                 reqs_pair[fid] = None
             elif "[New request]" in msg.content:
@@ -240,7 +241,7 @@ async def fra(ctx: SlashContext, user):
                         except KeyError as e:
                             res[fname] = 1
                     reqs_pair.remove(nid)
-        embedVar = discord.Embed(title="FRA Report", color=discord.Color("#FFFF00"))
+        embedVar = discord.Embed(title="FRA Report")
         for key in res.keys():
             if res[key] < 3:
                 del res[key]
