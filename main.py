@@ -44,10 +44,11 @@ async def on_ready():
     rqs_list = tx_guild.get_channel(request_list_id)
     rqs_list_msg = await rqs_list.history(limit=10000).flatten()
     for tx in txs:
-        tx_data[str(tx.discord_id)] = {"last_rank_up": "N/A", "finish_reqs": 0}
+        tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 0}
         for msg in staff_msgs:
             if msg.mentions and tx.discord_id == msg.mentions[0].id and (
                     ":PromoteRank:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:Accepted:942504144013492314>" in msg.content):
+                print(msg.content)
                 tx_data[str(tx.discord_id)]["last_rank_up"] = str(msg.created_at)
 
         date = tx_data[str(tx.discord_id)]["last_rank_up"]
