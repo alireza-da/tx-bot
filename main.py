@@ -39,9 +39,10 @@ async def on_ready():
     # emps = find_tx(tx_guild)
     # await non_blocking_data_insertion(setup_tables, emps)
     staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
-    staff_msgs = await staff_update_channel.history(limit=10000).flatten()
+    staff_msgs = await staff_update_channel.history(limit=5000).flatten()
     txs = get_all_mechanics()
-
+    rqs_list = tx_guild.get_channel(request_list_id)
+    rqs_list_msg = await rqs_list.history(limit=10000).flatten()
     for tx in txs:
         tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 0}
         for msg in staff_msgs:
@@ -51,8 +52,7 @@ async def on_ready():
 
         date = tx_data[str(tx.discord_id)]["last_rank_up"]
         if date != "":
-            rqs_list = tx_guild.get_channel(request_list_id)
-            rqs_list_msg = await rqs_list.history(limit=5000).flatten()
+
             index = 0
             date = dateutil.parser.parse(date)
             size = len(rqs_list_msg)
