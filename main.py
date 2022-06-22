@@ -52,7 +52,7 @@ async def on_ready():
         date = tx_data[str(tx.discord_id)]["last_rank_up"]
         if date != "":
             rqs_list = tx_guild.get_channel(request_list_id)
-            rqs_list_msg = await rqs_list.history(limit=10000).flatten()
+            rqs_list_msg = await rqs_list.history(limit=5000).flatten()
             index = 0
             date = dateutil.parser.parse(date)
             size = len(rqs_list_msg)
