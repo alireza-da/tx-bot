@@ -44,13 +44,13 @@ async def on_ready():
     rqs_list = tx_guild.get_channel(request_list_id)
     rqs_list_msg = await rqs_list.history(limit=10000).flatten()
     for tx in txs:
-        tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 0}
+        tx_data[str(tx.discord_id)] = {"last_rank_up": "N/A", "finish_reqs": 0}
         for msg in staff_msgs:
+            print(msg.mentions[0].id, msg.content)
             if msg.mentions and tx.discord_id == msg.mentions[0].id and (
-                    ":Rankup:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:green:942504144013492314>" in msg.content):
+                    ":PromoteRank:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:green:942504144013492314>" in msg.content):
                 tx_data[str(tx.discord_id)]["last_rank_up"] = str(msg.created_at)
-        with open('tx_data.json', "w") as fs:
-            json.dump(tx_data, fs)
+
         date = tx_data[str(tx.discord_id)]["last_rank_up"]
         if date != "":
 
@@ -90,7 +90,7 @@ async def on_message(message: discord.Message):
             tx_data[str(tx.discord_id)]["finish_reqs"] = tx_data[str(tx.discord_id)]["finish_reqs"] + 1
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
-        elif message.channel.id == staff_update_channel_id and ":Rankup:" in message.content or ":DemoteRank:" in message.content or "Welcome! <:green:942504144013492314>" in message.content:
+        elif message.channel.id == staff_update_channel_id and ":PromoteRank:" in message.content or ":DemoteRank:" in message.content or "Welcome! <:green:942504144013492314>" in message.content:
             tx = get_user(message.mentions[0].id)
             tx.points = 0
             update_mc(tx)
