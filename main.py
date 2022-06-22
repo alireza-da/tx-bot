@@ -136,7 +136,7 @@ async def fr_points(ctx: SlashContext, employee):
             tx = get_user(_id)
             roster = get_ic_name_roster(ctx.guild.get_member(_id))[1]
             member = get(ctx.guild.members, id=_id)
-            embedVar = discord.Embed(title=f"{member.mention}'s Finished Requests Report",
+            embedVar = discord.Embed(title=f"{member.nick}'s Finished Requests Report",
                                      description=f":abc: IC Name: {tx.ic_name}\n"
                                                  f":taxi: Taxi Code: {roster}\n:1234: Points: {tx.points}\n:white_check_mark: "
                                                  f"Finishe"
