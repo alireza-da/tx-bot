@@ -46,9 +46,8 @@ async def on_ready():
     for tx in txs:
         tx_data[str(tx.discord_id)] = {"last_rank_up": "N/A", "finish_reqs": 0}
         for msg in staff_msgs:
-            print(msg.mentions[0].id, msg.content)
             if msg.mentions and tx.discord_id == msg.mentions[0].id and (
-                    ":PromoteRank:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:green:942504144013492314>" in msg.content):
+                    ":PromoteRank:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:Accepted:942504144013492314>" in msg.content):
                 tx_data[str(tx.discord_id)]["last_rank_up"] = str(msg.created_at)
 
         date = tx_data[str(tx.discord_id)]["last_rank_up"]
