@@ -227,12 +227,13 @@ async def fra(ctx: SlashContext, user):
                 lines = msg.content.split("\n")
                 fid = lines[-1].split(" ")[-1]
                 fname_list = lines[2].split(" ")
-                print(fname_list)
                 fname = f"{fname_list[4]} {fname_list[5]}"
                 reqs_pair.append(fid)
+                print(fid)
             elif "[New request]" in msg.content:
                 lines = msg.content.split("\n")
                 nid = lines[-1].split(" ")[-1]
+                print(nid)
                 if nid in reqs_pair:
                     name = lines[-1].split(" ")[-1]
                     if name == user:
