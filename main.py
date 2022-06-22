@@ -187,7 +187,7 @@ async def add_points(ctx: SlashContext, employee, points):
             member = get(ctx.guild.members, id=_id)
             embedVar = discord.Embed(title=f"Add Points Report",
                                      description=f"Added {str(points)} points to {member.mention}. Current Points: {tx.points}. Previous Points: {prev_txp}")
-            await ctx.channel.send(embed=embedVar)
+            await ctx.send(embed=embedVar)
 
 
 @slash.slash(name="RemoveFRPoints",
@@ -210,7 +210,7 @@ async def remove_points(ctx: SlashContext, employee, points):
             member = get(ctx.guild.members, id=_id)
             embedVar = discord.Embed(title=f"Remove Points Report",
                                      description=f"Remove {str(points)} points from {member.mention}. Previous Points: {prev_txp}. Current Points: {tx.points}")
-            await ctx.channel.send(embed=embedVar)
+            await ctx.send(embed=embedVar)
 
 
 @slash.slash(name="FRA",
