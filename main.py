@@ -39,7 +39,7 @@ async def on_ready():
     # emps = find_tx(tx_guild)
     # await non_blocking_data_insertion(setup_tables, emps)
     staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
-    staff_msgs = await staff_update_channel.history(limit=5000).flatten()
+    staff_msgs = await staff_update_channel.history(limit=10000).flatten()
     txs = get_all_mechanics()
     rqs_list = tx_guild.get_channel(request_list_id)
     rqs_list_msg = await rqs_list.history(limit=10000).flatten()
@@ -49,7 +49,8 @@ async def on_ready():
             if msg.mentions and tx.discord_id == msg.mentions[0].id and (
                     ":Rankup:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:green:942504144013492314>" in msg.content):
                 tx_data[str(tx.discord_id)]["last_rank_up"] = str(msg.created_at)
-
+        with open('tx_data.json', "w") as fs:
+            json.dump(tx_data, fs)
         date = tx_data[str(tx.discord_id)]["last_rank_up"]
         if date != "":
 
@@ -60,6 +61,7 @@ async def on_ready():
             name = tx.ic_name
             if "}" in tx.ic_name:
                 name = tx.ic_name.split("} ")[1]
+            print(name)
             while rqs_list_msg[index].created_at > date:
                 if name in rqs_list_msg[index].content and "[Finish request]" in rqs_list_msg[index].content:
                     finish_reqs += 1
