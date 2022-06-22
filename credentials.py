@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-bot_token = os.getenv("bot_token")
-db_url = os.getenv("DATABASE_URL")
+bot_token = os.environ["bot_token"]
+db_url = os.environ["DATABASE_URL"]
 
 tx_guild_id = 884460833097273455
 request_list_id = 927347064801722419
