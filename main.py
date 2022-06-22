@@ -37,7 +37,7 @@ async def on_ready():
     print(f"Ready to work. Client ID: {client.user.id}")
     tx_guild = client.guilds[0]
     emps = find_tx(tx_guild)
-    await non_blocking_data_insertion(setup_tables, emps)
+    # await non_blocking_data_insertion(setup_tables, emps)
     staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
     staff_msgs = await staff_update_channel.history(limit=10000).flatten()
     txs = get_all_mechanics()
