@@ -135,7 +135,8 @@ async def fr_points(ctx: SlashContext, employee):
         if _id:
             tx = get_user(_id)
             roster = get_ic_name_roster(ctx.guild.get_member(_id))[1]
-            embedVar = discord.Embed(title=f"{tx.ic_name}'s Finished Requests Report",
+            member = get(ctx.guild.members, id=_id)
+            embedVar = discord.Embed(title=f"{member.mention}'s Finished Requests Report",
                                      description=f":abc: IC Name: {tx.ic_name}\n"
                                                  f":taxi: Taxi Code: {roster}\n:1234: Points: {tx.points}\n:white_check_mark: "
                                                  f"Finishe"
@@ -160,9 +161,10 @@ async def clear_points(ctx: SlashContext, employee):
             prev_txp = tx.points
             tx.points = 0
             update_mc(tx)
+            member = get(ctx.guild.members, id=_id)
             embedVar = discord.Embed(title=f"Clear Points Report",
-                                     description=f"Cleared {tx.ic_name} points. Previous Points: {prev_txp}")
-            await ctx.channel.send(embed=embedVar)
+                                     description=f"Cleared {member.mention} points. Previous Points: {prev_txp}")
+            await ctx.send(embed=embedVar)
 
 
 @slash.slash(name="AddFRPoints",
@@ -182,8 +184,9 @@ async def add_points(ctx: SlashContext, employee, points):
             prev_txp = tx.points
             tx.points += int(points)
             update_mc(tx)
+            member = get(ctx.guild.members, id=_id)
             embedVar = discord.Embed(title=f"Add Points Report",
-                                     description=f"Added {str(points)} points to {tx.ic_name}. Current Points: {tx.points}. Previous Points: {prev_txp}")
+                                     description=f"Added {str(points)} points to {member.mention}. Current Points: {tx.points}. Previous Points: {prev_txp}")
             await ctx.channel.send(embed=embedVar)
 
 
@@ -204,8 +207,9 @@ async def remove_points(ctx: SlashContext, employee, points):
             prev_txp = tx.points
             tx.points -= int(points)
             update_mc(tx)
+            member = get(ctx.guild.members, id=_id)
             embedVar = discord.Embed(title=f"Remove Points Report",
-                                     description=f"Remove {str(points)} points from {tx.ic_name}. Previous Points: {prev_txp}. Current Points: {tx.points}")
+                                     description=f"Remove {str(points)} points from {member.mention}. Previous Points: {prev_txp}. Current Points: {tx.points}")
             await ctx.channel.send(embed=embedVar)
 
 
