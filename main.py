@@ -20,7 +20,7 @@ intents.members = True
 client = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 slash = SlashCommand(client, sync_commands=True)
 
-dt_format = "%a, %d %b %Y %H:%M:%S"
+dt_format = "%D %B %Y"
 
 with open('tx_data.json', "r") as f:
     tx_data = json.load(f)
@@ -38,41 +38,40 @@ async def on_ready():
     tx_guild = client.guilds[0]
     # emps = find_tx(tx_guild)
     # await non_blocking_data_insertion(setup_tables, emps)
-    staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
-    staff_msgs = await staff_update_channel.history(limit=10000).flatten()
-    txs = get_all_mechanics()
-    rqs_list = tx_guild.get_channel(request_list_id)
-    rqs_list_msg = await rqs_list.history(limit=10000).flatten()
-    for tx in txs:
-        tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 0}
-        for msg in staff_msgs:
-            if msg.mentions and tx.discord_id == msg.mentions[0].id and (
-                    ":PromoteRank:" in msg.content or ":DemoteRank:" in msg.content or "Welcome! <:Accepted:942504144013492314>" in msg.content):
-                print(msg.content)
-                tx_data[str(tx.discord_id)]["last_rank_up"] = str(msg.created_at)
-
-        date = tx_data[str(tx.discord_id)]["last_rank_up"]
-        if date != "":
-
-            index = 0
-            date = dateutil.parser.parse(date)
-            size = len(rqs_list_msg)
-            finish_reqs = 0
-            name = tx.ic_name
-            if "}" in tx.ic_name:
-                name = tx.ic_name.split("} ")[1]
-            print(name)
-            while rqs_list_msg[index].created_at > date:
-                if name in rqs_list_msg[index].content and "[Finish request]" in rqs_list_msg[index].content:
-                    finish_reqs += 1
-                index += 1
-                if index > size - 1:
-                    break
-            tx_data[str(tx.discord_id)]["finish_reqs"] = finish_reqs
-            tx.points += finish_reqs - tx.points
-            update_mc(tx)
-    with open('tx_data.json', "w") as fs:
-        json.dump(tx_data, fs)
+    # staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
+    # staff_msgs = await staff_update_channel.history(limit=10000).flatten()
+    # txs = get_all_mechanics()
+    # rqs_list = tx_guild.get_channel(request_list_id)
+    # rqs_list_msg = await rqs_list.history(limit=10000).flatten()
+    # for tx in txs:
+    #     tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 0}
+    #     for msg in staff_msgs:
+    #         if msg.mentions and tx.discord_id == msg.mentions[0].id and (
+    #                 "949785930217164880" in msg.content or ":DemoteRank:" in msg.content or "942504144013492314" in msg.content):
+    #             tx_data[str(tx.discord_id)]["last_rank_up"] = str(msg.created_at)
+    #
+    #     date = tx_data[str(tx.discord_id)]["last_rank_up"]
+    #     if date != "":
+    #
+    #         index = 0
+    #         date = dateutil.parser.parse(date)
+    #         size = len(rqs_list_msg)
+    #         finish_reqs = 0
+    #         name = tx.ic_name
+    #         if "}" in tx.ic_name:
+    #             name = tx.ic_name.split("} ")[1]
+    #         print(name)
+    #         while rqs_list_msg[index].created_at > date:
+    #             if name in rqs_list_msg[index].content and "[Finish request]" in rqs_list_msg[index].content:
+    #                 finish_reqs += 1
+    #             index += 1
+    #             if index > size - 1:
+    #                 break
+    #         tx_data[str(tx.discord_id)]["finish_reqs"] = finish_reqs
+    #         tx.points += finish_reqs - tx.points
+    #         update_mc(tx)
+    # with open('tx_data.json', "w") as fs:
+    #     json.dump(tx_data, fs)
 
 
 @client.event
@@ -281,7 +280,7 @@ async def set_job(ctx: SlashContext, employee, rank, taxi_code, ic_name, license
             staff_channel = ctx.guild.get_channel(staff_update_channel_id)
             await staff_channel.send(f"**Additional Staff update [{jdatetime.datetime.now().strftime(dt_format)}]** 📌\n" 
                                     f"{member.mention} Has Been joined To SSTX and Will Be Known as [{taxi_code}], "
-                                     f"Welcome!\n "
+                                     f"Welcome! <:Accepted:942504144013492314>\n "
                                      f"Author: {ctx.author.mention}")
             if license.lower() == "no":
                 await member.add_roles(roles[920018697924522074])
