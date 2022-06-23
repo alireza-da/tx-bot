@@ -286,8 +286,8 @@ async def set_job(ctx: SlashContext, employee, rank, taxi_code, ic_name, license
                 await member.add_roles(roles[920018697924522074])
             tx = TxEmployee(ic_name, taxi_code, member.id, "")
             add_mcs_to_db([tx])
+            tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 0}
             tx_data[str(tx.discord_id)]["last_rank_up"] = str(jdatetime.datetime.now())
-            tx_data[str(tx.discord_id)]["finish_reqs"] = 0
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
 
