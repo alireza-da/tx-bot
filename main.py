@@ -311,7 +311,12 @@ async def toggle_default_role(ctx: SlashContext, member):
             roles = get_ranks_roles_by_id(ctx.guild)
             if 914148579969466438 in role_ids:
                 await member.remove_roles(roles[914148579969466438])
+                embedVar = discord.Embed(title="Default Role", description=f"Role {roles[914148579969466438].mention} has been taken from {member.mention}")
+                await ctx.send(embed=embedVar)
             else:
+                embedVar = discord.Embed(title="Default Role",
+                                         description=f"Role {roles[914148579969466438].mention} has been given to {member.mention}")
+                await ctx.send(embed=embedVar)
                 await member.add_roles(roles[914148579969466438])
 
 
