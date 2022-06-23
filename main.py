@@ -8,7 +8,7 @@ import dateutil.parser
 import jdatetime
 
 from discord.ext import commands
-from credentials import bot_token, tx_guild_id, staff_update_channel_id, request_list_id
+from credentials import bot_token, tx_guild_id, staff_update_channel_id, request_list_id, rank_role_ids
 from discord.ext import commands
 from discord.utils import get
 from discord_slash import SlashCommand, SlashContext
@@ -274,6 +274,7 @@ async def set_job(ctx: SlashContext, employee, rank, taxi_code, ic_name, license
             roles = get_ranks_roles_by_id(ctx.guild)
             await member.add_roles(roles[884815982110060635])
             await member.add_roles(roles[884815998249758830])
+            await member.add_roles(roles[rank_role_ids[int(rank)]])
             await member.edit(nick=f"[{taxi_code}] {ic_name}")
             embedVar = discord.Embed(title=f"Set Job Report", description=f"Successfully Signed {member.mention}")
             await ctx.send(embed=embedVar)
