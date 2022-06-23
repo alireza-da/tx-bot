@@ -20,7 +20,7 @@ intents.members = True
 client = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 slash = SlashCommand(client, sync_commands=True)
 
-dt_format = "%D %B %Y"
+dt_format = "%d %B %Y"
 
 with open('tx_data.json', "r") as f:
     tx_data = json.load(f)
