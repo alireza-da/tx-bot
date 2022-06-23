@@ -36,6 +36,7 @@ async def non_blocking_data_insertion(blocking_func: typing.Callable, *args, **k
 async def on_ready():
     print(f"Ready to work. Client ID: {client.user.id}")
     tx_guild = client.guilds[0]
+
     # emps = find_tx(tx_guild)
     # await non_blocking_data_insertion(setup_tables, emps)
     # staff_update_channel = tx_guild.get_channel(staff_update_channel_id)
@@ -291,6 +292,45 @@ async def set_job(ctx: SlashContext, employee, rank, taxi_code, ic_name, license
             tx_data[str(tx.discord_id)]["last_rank_up"] = str(jdatetime.datetime.now())
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
+
+
+@slash.slash(name="tdf",
+             description="Toggle Default role",
+             guild_ids=[tx_guild_id],
+             )
+async def toggle_default_role(ctx: SlashContext, member):
+    if ctx:
+        _id = None
+        if "!" in member:
+            _id = int(member.split("!")[1].replace(">", ""))
+        else:
+            _id = int(member.split("@")[1].replace(">", ""))
+        if _id:
+            member = get(ctx.guild.members, id=_id)
+            role_ids = [r.id for r in member.roles]
+            roles = get_ranks_roles_by_id(ctx.guild)
+            if 914148579969466438 in role_ids:
+                await member.remove_roles(roles[914148579969466438])
+            else:
+                await member.add_roles(roles[914148579969466438])
+
+
+@slash.slash(name="reset-employee",
+             description="Reset employee Finished Requests and Last Rank up date",
+             guild_ids=[tx_guild_id],
+             )
+async def res_emp(ctx: SlashContext, employee):
+    if ctx:
+        _id = None
+        if "!" in employee:
+            _id = int(employee.split("!")[1].replace(">", ""))
+        else:
+            _id = int(employee.split("@")[1].replace(">", ""))
+        if _id:
+            tx_data[str(_id)] = {"last_rank_up": "", "finish_reqs": 0}
+            with open('tx_data.json', "w") as fs:
+                json.dump(tx_data, fs)
+            await ctx.send("Reset Successfully Done.")
 
 
 def get_ranks_roles_by_id(guild: discord.Guild):
