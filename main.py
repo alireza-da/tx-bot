@@ -332,10 +332,14 @@ async def res_emp(ctx: SlashContext, employee):
         else:
             _id = int(employee.split("@")[1].replace(">", ""))
         if _id:
-            tx_data[str(_id)] = {"last_rank_up": "", "finish_reqs": 0}
-            with open('tx_data.json', "w") as fs:
-                json.dump(tx_data, fs)
-            await ctx.send("Reset Successfully Done.")
+            if _id == ctx.author.id:
+
+                tx_data[str(_id)] = {"last_rank_up": "", "finish_reqs": 0}
+                with open('tx_data.json', "w") as fs:
+                    json.dump(tx_data, fs)
+                await ctx.send("Reset Successfully Done.")
+            else:
+                await ctx.send("You can't reset other employee's data.")
 
 
 def get_ranks_roles_by_id(guild: discord.Guild):
