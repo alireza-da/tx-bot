@@ -105,7 +105,7 @@ async def on_member_remove(member):
     role_ids = [r.id for r in member.roles]
     # Has Taxi Dept Role
     if 884815982110060635 in role_ids:
-        embedVar = discord.Embed(title=f"{member} just left the server.", description=f"Display Name: {member.display_name} | Nickname: {member.nick} | Discord ID: {member.id}")
+        embedVar = discord.Embed(title=f"{member} just left the server.", description=f"Display Name: {member.name} | Nickname: {member.nick} | Discord ID: {member.id}")
         await channel.send(embed=embedVar)
 
 
