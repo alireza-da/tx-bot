@@ -90,7 +90,7 @@ async def on_message(message: discord.Message):
             tx_data[str(tx.discord_id)]["finish_reqs"] = tx_data[str(tx.discord_id)]["finish_reqs"] + 1
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
-        elif message.channel.id == staff_update_channel_id and ":PromoteRank:" in message.content or ":DemoteRank:" in message.content or "Welcome! <:green:942504144013492314>" in message.content:
+        elif message.channel.id == staff_update_channel_id and "949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:":
             tx = get_user(message.mentions[0].id)
             tx.points = 0
             update_mc(tx)
