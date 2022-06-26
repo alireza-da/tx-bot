@@ -90,13 +90,23 @@ async def on_message(message: discord.Message):
             tx_data[str(tx.discord_id)]["finish_reqs"] = tx_data[str(tx.discord_id)]["finish_reqs"] + 1
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
-        elif message.channel.id == staff_update_channel_id and "949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:":
+        elif message.channel.id == staff_update_channel_id and ("949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:"):
             tx = get_user(message.mentions[0].id)
             tx.points = 0
             update_mc(tx)
             tx_data[str(tx.discord_id)]["last_rank_up"] = str(message.created_at)
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
+
+
+@client.event
+async def on_member_remove(member):
+    channel = member.guild.get_channel(990646838195523605)
+    role_ids = [r.id for r in member.roles]
+    # Has Taxi Dept Role
+    if 884815982110060635 in role_ids:
+        embedVar = discord.Embed(title=f"{member} just left the server.", description=f"Display Name: {member.display_name} | Nickname: {member.nick} | Discord ID: {member.id}")
+        await channel.send(embed=embedVar)
 
 
 def find_member_by_nick(members: list[discord.Member], nick: str):
@@ -348,6 +358,7 @@ def get_ranks_roles_by_id(guild: discord.Guild):
     for role in guild.roles:
         res[role.id] = role
     return res
+
 
 
 client.run(bot_token)
