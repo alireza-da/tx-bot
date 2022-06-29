@@ -35,7 +35,7 @@ async def non_blocking_data_insertion(blocking_func: typing.Callable, *args, **k
 @client.event
 async def on_ready():
     print(f"Ready to work. Client ID: {client.user.id}")
-    tx_guild = client.guilds[0]
+    # tx_guild = client.guilds[0]
 
     # emps = find_tx(tx_guild)
     # await non_blocking_data_insertion(setup_tables, emps)
@@ -90,7 +90,7 @@ async def on_message(message: discord.Message):
             tx_data[str(tx.discord_id)]["finish_reqs"] = tx_data[str(tx.discord_id)]["finish_reqs"] + 1
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
-        elif message.channel.id == staff_update_channel_id and ("949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:"):
+        elif message.channel.id == staff_update_channel_id and ("949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:" in message.content):
             tx = get_user(message.mentions[0].id)
             tx.points = 0
             update_mc(tx)
@@ -230,7 +230,7 @@ async def remove_points(ctx: SlashContext, employee, points):
 async def fra(ctx: SlashContext, user):
     if ctx:
         req_list_channel = ctx.guild.get_channel(request_list_id)
-        await ctx.send(":hourglass: In Progress ...")
+        # await ctx.send(":hourglass: In Progress ...")
         hist = await req_list_channel.history(limit=10000).flatten()
         res = {}
         reqs_pair = []
@@ -238,6 +238,7 @@ async def fra(ctx: SlashContext, user):
         fname = ""
         nid = 0
         for msg in hist:
+            print(msg)
             if "[Finish request]" in msg.content:
                 lines = msg.content.split("\n")
                 fid = lines[-1].split(" ")[-1]
