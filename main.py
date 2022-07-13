@@ -237,7 +237,7 @@ async def remove_points(ctx: SlashContext, employee, points):
              description="Job Abuse Detector",
              guild_ids=[tx_guild_id],
              )
-async def fra(ctx: SlashContext, user: str, requests, threshold):
+async def fra(ctx: SlashContext, user: str, requests):
     if ctx:
         req_list_channel = ctx.guild.get_channel(request_list_id)
         await ctx.send(":hourglass: In Progress ...")
@@ -275,7 +275,7 @@ async def fra(ctx: SlashContext, user: str, requests, threshold):
         embedVar = discord.Embed(title=f"FRA Report For {user}")
 
         for key in list(res):
-            if res[key] < int(threshold):
+            if res[key] < 4:
                 del res[key]
             else:
                 embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}", inline=False)
