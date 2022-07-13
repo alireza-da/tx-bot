@@ -278,11 +278,14 @@ async def fra(ctx: SlashContext, user: str, requests):
             if res[key] < int(requests) / 25:
                 del res[key]
             else:
-                embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}", inline=False)
+                embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}", inline=True)
         if len(res) == 0:
             embedVar.description = "No request abuse found relevant to mentioned name."
-
+        embedVar.add_field(name="Used By", value=f"{ctx.author.mention}")
         await ctx.channel.send(embed=embedVar)
+        if len(res) > 0:
+            channel = await ctx.guild.get_channel(996904616274972692)
+            await channel.send(embed=embedVar)
 
 
 @slash.slash(name="set-job",
