@@ -34,6 +34,7 @@ async def non_blocking_data_insertion(blocking_func: typing.Callable, *args, **k
 
 @client.event
 async def on_ready():
+
     print(f"Ready to work. Client ID: {client.user.id}")
     # tx_guild = client.guilds[0]
 
@@ -94,11 +95,15 @@ async def on_message(message: discord.Message):
                 tx_data[str(tx.discord_id)] = {"last_rank_up": "", "finish_reqs": 1}
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
-        elif message.channel.id == staff_update_channel_id and ("949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:" in message.content):
+        elif message.channel.id == staff_update_channel_id and (
+                "949785930217164880" in message.content or ":DemoteRank:" in message.content or "942504144013492314" in message.content or ":Rejected:" in message.content):
             tx = get_user(message.mentions[0].id)
             tx.points = 0
             update_mc(tx)
-            tx_data[str(tx.discord_id)]["last_rank_up"] = str(message.created_at)
+            try:
+                tx_data[str(tx.discord_id)]["last_rank_up"] = str(message.created_at)
+            except KeyError as e:
+                tx_data[str(tx.discord_id)] = {"last_rank_up": str(message.created_at), "finish_reqs": 1}
             with open('tx_data.json', "w") as fs:
                 json.dump(tx_data, fs)
 
@@ -109,7 +114,8 @@ async def on_member_remove(member):
     role_ids = [r.id for r in member.roles]
     # Has Taxi Dept Role
     if 884815982110060635 in role_ids:
-        embedVar = discord.Embed(title=f"{member} just left the server.", description=f"Display Name: {member.name} | Nickname: {member.nick} | Discord ID: {member.id}")
+        embedVar = discord.Embed(title=f"{member} just left the server.",
+                                 description=f"Display Name: {member.name} | Nickname: {member.nick} | Discord ID: {member.id}")
         await channel.send(embed=embedVar)
 
 
@@ -231,43 +237,51 @@ async def remove_points(ctx: SlashContext, employee, points):
              description="Job Abuse Detector",
              guild_ids=[tx_guild_id],
              )
-async def fra(ctx: SlashContext, user):
+async def fra(ctx: SlashContext, user: str, requests):
     if ctx:
         req_list_channel = ctx.guild.get_channel(request_list_id)
-        # await ctx.send(":hourglass: In Progress ...")
-        hist = await req_list_channel.history(limit=10000).flatten()
+        await ctx.send(":hourglass: In Progress ...")
+        hist = await req_list_channel.history(limit=int(requests)).flatten()
         res = {}
         reqs_pair = []
         fid = 0
         fname = ""
         nid = 0
         for msg in hist:
-            print(msg)
             if "[Finish request]" in msg.content:
                 lines = msg.content.split("\n")
-                fid = lines[-1].split(" ")[-1]
+                fid = lines[-2].split(" ")[-1]
                 fname_list = lines[2].split(" ")
-                fname = f"{fname_list[4]} {fname_list[5]}"
+                try:
+                    fname = f"{fname_list[3]} {fname_list[4]}"
+                except IndexError as e:
+                    fname = fname_list[3]
                 reqs_pair.append(fid)
-                print(fid)
             elif "[New request]" in msg.content:
                 lines = msg.content.split("\n")
-                nid = lines[-1].split(" ")[-1]
-                print(nid)
+                nid = lines[-2].split(" ")[-1]
                 if nid in reqs_pair:
-                    name = lines[-1].split(" ")[-1]
-                    if name == user:
+                    words = lines[3].split(" ")
+                    name = f"{words[-2]} {words[-1]}"
+
+                    if name.__eq__(user):
+                        print(len(name), len(user))
+                        print(name, user)
                         try:
                             res[fname] += 1
                         except KeyError as e:
                             res[fname] = 1
                     reqs_pair.remove(nid)
-        embedVar = discord.Embed(title="FRA Report")
-        for key in res.keys():
+        embedVar = discord.Embed(title=f"FRA Report For {user}")
+
+        for key in list(res):
             if res[key] < 3:
                 del res[key]
             else:
-                embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}")
+                embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}", inline=False)
+        if len(res) == 0:
+            embedVar.description = "No request abuse found relevant to mentioned name."
+
         await ctx.channel.send(embed=embedVar)
 
 
@@ -292,10 +306,11 @@ async def set_job(ctx: SlashContext, employee, rank, taxi_code, ic_name, license
             embedVar = discord.Embed(title=f"Set Job Report", description=f"Successfully Signed {member.mention}")
             await ctx.send(embed=embedVar)
             staff_channel = ctx.guild.get_channel(staff_update_channel_id)
-            await staff_channel.send(f"**Additional Staff update [{jdatetime.datetime.now().strftime(dt_format)}]** 📌\n" 
-                                    f"{member.mention} Has Been joined To SSTX and Will Be Known as [{taxi_code}], "
-                                     f"Welcome! <:Accepted:942504144013492314>\n "
-                                     f"Author: {ctx.author.mention}")
+            await staff_channel.send(
+                f"**Additional Staff update [{jdatetime.datetime.now().strftime(dt_format)}]** 📌\n"
+                f"{member.mention} Has Been joined To SSTX and Will Be Known as [{taxi_code}], "
+                f"Welcome! <:Accepted:942504144013492314>\n "
+                f"Author: {ctx.author.mention}")
             if license.lower() == "no":
                 await member.add_roles(roles[920018697924522074])
             tx = TxEmployee(ic_name, taxi_code, member.id, "")
@@ -323,7 +338,8 @@ async def toggle_default_role(ctx: SlashContext, member):
             roles = get_ranks_roles_by_id(ctx.guild)
             if 914148579969466438 in role_ids:
                 await member.remove_roles(roles[914148579969466438])
-                embedVar = discord.Embed(title="Default Role", description=f"Role {roles[914148579969466438].mention} has been taken from {member.mention}")
+                embedVar = discord.Embed(title="Default Role",
+                                         description=f"Role {roles[914148579969466438].mention} has been taken from {member.mention}")
                 await ctx.send(embed=embedVar)
             else:
                 embedVar = discord.Embed(title="Default Role",
@@ -360,7 +376,6 @@ def get_ranks_roles_by_id(guild: discord.Guild):
     for role in guild.roles:
         res[role.id] = role
     return res
-
 
 
 client.run(bot_token)
