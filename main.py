@@ -364,8 +364,7 @@ async def res_emp(ctx: SlashContext, employee):
             _id = int(employee.split("@")[1].replace(">", ""))
         if _id:
             role_ids = [r.id for r in ctx.author.roles]
-            if _id == ctx.author.id or 884815801247498280 in role_ids:
-
+            if _id == ctx.author.id or 884815801247498280 in role_ids or 909030716262744114 in role_ids or 969265484560232478 in role_ids:
                 tx_data[str(_id)] = {"last_rank_up": "", "finish_reqs": 0}
                 with open('tx_data.json', "w") as fs:
                     json.dump(tx_data, fs)
