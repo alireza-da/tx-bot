@@ -248,34 +248,40 @@ async def fra(ctx: SlashContext, user: str, requests):
         fname = ""
         nid = 0
         for msg in hist:
-            if "[Finish request]" in msg.content:
+            if "[New request]" in msg.content:
                 lines = msg.content.split("\n")
                 fid = lines[-2].split(" ")[-1]
-                fname_list = lines[2].split(" ")
-                try:
-                    fname = f"{fname_list[3]} {fname_list[4]}"
-                except IndexError as e:
-                    fname = fname_list[3]
+                words = lines[3].split(" ")
+                fname = f"{words[-2]} {words[-1]}"
+                # fname_list = lines[2].split(" ")
+                # try:
+                #     fname = f"{fname_list[3]} {fname_list[4]}"
+                # except IndexError as e:
+                #     fname = fname_list[3]
                 reqs_pair.append(fid)
-            elif "[New request]" in msg.content:
+            elif "[Finish request]" in msg.content:
                 lines = msg.content.split("\n")
                 nid = lines[-2].split(" ")[-1]
                 if nid in reqs_pair:
-                    words = lines[3].split(" ")
-                    name = f"{words[-2]} {words[-1]}"
-
+                    # words = lines[3].split(" ")
+                    # name = f"{words[-2]} {words[-1]}"
+                    fname_list = lines[2].split(" ")
+                    try:
+                        name = f"{fname_list[3]} {fname_list[4]}"
+                    except IndexError as e:
+                        name = fname_list[3]
                     if name.__eq__(user):
-                        print(len(name), len(user))
-                        print(name, user)
+                        # print(len(name), len(user))
+                        # print(name, user)
                         try:
                             res[fname] += 1
-                        except KeyError as e:
+                        except KeyError:
                             res[fname] = 1
                     reqs_pair.remove(nid)
         embedVar = discord.Embed(title=f"FRA Report For {user}")
 
         for key in list(res):
-            if res[key] < int(requests) / 25:
+            if res[key] < 0: #int(requests) / 25:
                 del res[key]
             else:
                 embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}", inline=True)
@@ -284,7 +290,7 @@ async def fra(ctx: SlashContext, user: str, requests):
         embedVar.add_field(name="Used By", value=f"{ctx.author.mention}")
         await ctx.channel.send(embed=embedVar)
         if len(res) > 0:
-            channel = await ctx.guild.get_channel(996904616274972692)
+            channel = ctx.guild.get_channel(996904616274972692)
             await channel.send(embed=embedVar)
 
 
