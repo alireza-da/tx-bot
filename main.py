@@ -281,7 +281,7 @@ async def fra(ctx: SlashContext, user: str, requests):
         embedVar = discord.Embed(title=f"FRA Report For {user}")
 
         for key in list(res):
-            if res[key] < 0: #int(requests) / 25:
+            if res[key] < int(requests) / 25:
                 del res[key]
             else:
                 embedVar.add_field(name=f"{key}", value=f"Finished Requests: {res[key]}", inline=True)
